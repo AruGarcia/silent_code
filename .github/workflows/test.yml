@@ -1,0 +1,37 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    env:
+      DJANGO_SETTINGS_MODULE: config.settings.development
+      DEBUG: "True"
+      SECRET_KEY: ci-secret-key-with-enough-entropy-1234567890-abcdef
+      ALLOWED_HOSTS: 127.0.0.1,localhost,testserver
+      CSRF_TRUSTED_ORIGINS: http://127.0.0.1,http://localhost
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+
+      - name: Sync dependencies
+        run: uv sync --all-groups
+
+      - name: Run Ruff check
+        run: uv run ruff check .
+
+      - name: Run Ruff format check
+        run: uv run ruff format --check .
+
+      - name: Run tests
+        run: uv run pytest
