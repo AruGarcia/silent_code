@@ -28,3 +28,11 @@ select = ["E", "F", "I", "UP", "B"]
 DJANGO_SETTINGS_MODULE = "config.settings.development"
 python_files = ["tests.py", "test_*.py", "*_tests.py"]
 addopts = "--cov=app.silent_code --cov=config --cov-report=term-missing"
+
+[tool.coverage.report]
+omit = [
+    "app/silent_code/tests/*",
+    "config/tests/*",
+    "config/asgi.py",
+    "config/wsgi.py",
+]
