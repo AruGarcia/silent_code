@@ -12,6 +12,8 @@ def test_development_settings_use_local_defaults(monkeypatch):
     assert development.SECRET_KEY == "django_django"
     assert development.DEBUG is True
     assert development.ALLOWED_HOSTS == ["127.0.0.1", "localhost", "testserver"]
+    assert development.AUTH_USER_MODEL == "accounts.User"
+    assert development.LOGIN_URL == "accounts:login"
 
 
 def test_production_settings_require_env_and_enable_security_defaults(monkeypatch):

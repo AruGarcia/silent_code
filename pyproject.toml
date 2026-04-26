@@ -24,6 +24,9 @@ target-version = "py312"
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 
+[tool.ruff.lint.per-file-ignores]
+"*/migrations/*.py" = ["E501", "I001"]
+
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings.development"
 python_files = ["tests.py", "test_*.py", "*_tests.py"]
@@ -31,6 +34,7 @@ addopts = "--cov=app.silent_code --cov=config --cov-report=term-missing"
 
 [tool.coverage.report]
 omit = [
+    "app/accounts/tests/*",
     "app/silent_code/tests/*",
     "config/tests/*",
     "config/asgi.py",

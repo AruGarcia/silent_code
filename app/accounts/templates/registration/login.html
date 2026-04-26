@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Login</title>
 </head>
 <body>
-    <h1>Hello, {{ request.user.email }}!</h1>
-    <form method="post" action="{% url 'accounts:logout' %}">
+    <h1>Login</h1>
+    <form method="post">
         {% csrf_token %}
-        <button type="submit">Logout</button>
+        {{ form.as_p }}
+        <button type="submit">Login</button>
     </form>
+    <p><a href="{% url 'accounts:signup' %}">Create account</a></p>
 </body>
 </html>
