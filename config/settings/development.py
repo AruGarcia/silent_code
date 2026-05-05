@@ -11,3 +11,6 @@ SECRET_KEY = base.env(
 )
 DEBUG = base.env.bool("DEBUG", default=True)
 ALLOWED_HOSTS = base.env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost", "testserver"])
+
+INSTALLED_APPS = [*base.INSTALLED_APPS, "django_extensions"]
+SHELL_PLUS = "ptpython"
