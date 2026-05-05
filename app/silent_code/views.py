@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic import DeleteView, ListView, UpdateView
 
+from app.silent_code import facade
 from app.silent_code.forms import TaskForm
 from app.silent_code.models import Task
 
@@ -12,41 +13,33 @@ class UserTaskQuerysetMixin(LoginRequiredMixin):
     model = Task
 
     def get_queryset(self):
-        return Task.objects.filter(user=self.request.user)
+        return facade.tasks_for_user(self.request.user)
+
+    def get_task(self):
+        return get_object_or_404(self.get_queryset(), pk=self.kwargs["pk"])
 
 
 class TaskListView(UserTaskQuerysetMixin, ListView):
     context_object_name = "tasks"
     template_name = "silent_code/home.html"
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        status_filter = self.request.GET.get("status", "all")
+    def get_status_filter(self):
+        return self.request.GET.get("status", facade.DEFAULT_STATUS_FILTER)
 
-        if status_filter == "pending":
-            return queryset.filter(is_completed=False)
-        if status_filter == "completed":
-            return queryset.filter(is_completed=True)
-        return queryset
+    def get_queryset(self):
+        return facade.list_tasks_for_user(self.request.user, self.get_status_filter())
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = kwargs.get("form", TaskForm())
-        context["status_filter"] = self.request.GET.get("status", "all")
-        all_tasks = Task.objects.filter(user=self.request.user)
-        context["task_counts"] = {
-            "all": all_tasks.count(),
-            "pending": all_tasks.filter(is_completed=False).count(),
-            "completed": all_tasks.filter(is_completed=True).count(),
-        }
+        context["status_filter"] = self.get_status_filter()
+        context["task_counts"] = facade.task_counts_for_user(self.request.user)
         return context
 
     def post(self, request, *args, **kwargs):
         form = TaskForm(request.POST)
         if form.is_valid():
-            task = form.save(commit=False)
-            task.user = request.user
-            task.save()
+            facade.create_task(user=request.user, **form.cleaned_data)
             return HttpResponseRedirect(reverse("hello-world"))
 
         self.object_list = self.get_queryset()
@@ -59,10 +52,18 @@ class TaskUpdateView(UserTaskQuerysetMixin, UpdateView):
     template_name = "silent_code/task_form.html"
     success_url = reverse_lazy("hello-world")
 
+    def form_valid(self, form):
+        facade.update_task(task=self.object, **form.cleaned_data)
+        return HttpResponseRedirect(self.get_success_url())
+
 
 class TaskDeleteView(UserTaskQuerysetMixin, DeleteView):
     template_name = "silent_code/task_confirm_delete.html"
     success_url = reverse_lazy("hello-world")
+
+    def form_valid(self, form):
+        facade.delete_task(task=self.object)
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class TaskToggleCompleteView(UserTaskQuerysetMixin, UpdateView):
@@ -70,7 +71,6 @@ class TaskToggleCompleteView(UserTaskQuerysetMixin, UpdateView):
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
-        task = get_object_or_404(self.get_queryset(), pk=kwargs["pk"])
-        task.is_completed = not task.is_completed
-        task.save(update_fields=["is_completed", "updated_at"])
+        task = self.get_task()
+        facade.toggle_task_completion(task=task)
         return HttpResponseRedirect(reverse("hello-world"))

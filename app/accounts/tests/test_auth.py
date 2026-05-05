@@ -3,6 +3,11 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 User = get_user_model()
+PASSWORD = "StrongPassword123"
+
+
+def create_user(email):
+    return User.objects.create_user(email=email, password=PASSWORD)
 
 
 @pytest.mark.django_db
@@ -26,12 +31,11 @@ def test_signup_creates_user_and_logs_them_in(client):
 
 @pytest.mark.django_db
 def test_login_accepts_email_as_identifier(client):
-    password = "StrongPassword123"
-    user = User.objects.create_user(email="user@example.com", password=password)
+    user = create_user("user@example.com")
 
     response = client.post(
         reverse("accounts:login"),
-        {"username": user.email, "password": password},
+        {"username": user.email, "password": PASSWORD},
     )
 
     assert response.status_code == 302
@@ -40,7 +44,7 @@ def test_login_accepts_email_as_identifier(client):
 
 @pytest.mark.django_db
 def test_logout_ends_authenticated_session(client):
-    user = User.objects.create_user(email="user@example.com", password="StrongPassword123")
+    user = create_user("user@example.com")
     client.force_login(user)
 
     response = client.post(reverse("accounts:logout"))
