@@ -1,17 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
-<body>
-    <h1>Login</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
-    </form>
-    <p><a href="{% url 'accounts:signup' %}">Create account</a></p>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Login | Silent Code{% endblock %}
+
+{% block content %}
+    <section class="grid auth-grid">
+        <div class="surface hero stack" style="grid-column: span 7;">
+            <span class="eyebrow">Authentication</span>
+            <h1>Enter quietly. Work clearly.</h1>
+            <p>
+                Silent Code is built around focused task ownership. Sign in with your email
+                to access your private workspace and keep every task attached to the right user.
+            </p>
+        </div>
+
+        <div class="surface card stack" style="grid-column: span 5;">
+            <div class="stack">
+                <h2>Login</h2>
+                <p class="fine">Use the email address tied to your account.</p>
+            </div>
+            {% if form.errors %}
+                <div class="errors">
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="button-row">
+                    <button type="submit">Login</button>
+                    <a class="button-link secondary" href="{% url 'accounts:signup' %}">Create account</a>
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock %}

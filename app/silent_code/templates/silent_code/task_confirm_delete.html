@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Task | Silent Code{% endblock %}
+
+{% block content %}
+    <section class="surface hero stack">
+        <span class="eyebrow">Delete task</span>
+        <h1>Remove this item?</h1>
+        <p>This action will permanently delete <strong>{{ object.title }}</strong>.</p>
+    </section>
+
+    <section class="surface card stack" style="margin-top: 24px; max-width: 760px;">
+        <h2>Confirm deletion</h2>
+        <p>You can cancel now if you still need this task in your queue.</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="button-row">
+                <button class="danger" type="submit">Delete task</button>
+                <a class="button-link secondary" href="{% url 'hello-world' %}">Cancel</a>
+            </div>
+        </form>
+    </section>
+{% endblock %}

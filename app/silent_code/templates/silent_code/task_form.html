@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Task | Silent Code{% endblock %}
+
+{% block content %}
+    <section class="surface hero stack">
+        <span class="eyebrow">Task editor</span>
+        <h1>Refine the work.</h1>
+        <p>Update the title or expand the task details without leaving your flow.</p>
+    </section>
+
+    <section class="surface card stack" style="margin-top: 24px; max-width: 760px;">
+        <h2>Edit task</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="button-row">
+                <button type="submit">Save changes</button>
+                <a class="button-link secondary" href="{% url 'hello-world' %}">Back to tasks</a>
+            </div>
+        </form>
+    </section>
+{% endblock %}

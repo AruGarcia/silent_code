@@ -1,15 +1,114 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-</head>
-<body>
-    <h1>Hello, {{ request.user.email }}!</h1>
+{% extends "base.html" %}
+
+{% block title %}Your Tasks | Silent Code{% endblock %}
+
+{% block top_actions %}
     <form method="post" action="{% url 'accounts:logout' %}">
         {% csrf_token %}
-        <button type="submit">Logout</button>
+        <button class="secondary" type="submit">Logout</button>
     </form>
-</body>
-</html>
+{% endblock %}
+
+{% block content %}
+    <section class="surface hero">
+        <div class="hero-copy stack">
+            <span class="eyebrow">Personal Task Desk</span>
+            <h1>Quiet structure for what matters next.</h1>
+            <p>
+                Track your work, keep the noise low, and move one task at a time.
+                Signed in as <strong>{{ request.user.email }}</strong>.
+            </p>
+        </div>
+    </section>
+
+    <section class="grid tasks-grid" style="margin-top: 24px;">
+        <div class="surface card stack" style="grid-column: span 4;">
+            <div class="stack">
+                <span class="eyebrow">Create task</span>
+                <h2>Add the next item</h2>
+                <p class="fine">Keep it brief. You can refine details later.</p>
+            </div>
+            {% if form.errors %}
+                <div class="errors">
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="button-row">
+                    <button type="submit">Create task</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="surface card stack" style="grid-column: span 8;">
+            <div class="split">
+                <div class="stack">
+                    <span class="eyebrow">Workspace</span>
+                    <h2>Your tasks</h2>
+                    <p class="fine">Filter by state and operate only on your own items.</p>
+                </div>
+                <div class="filters">
+                    <a class="filter-chip {% if status_filter == 'all' %}active{% endif %}" href="{% url 'hello-world' %}?status=all">
+                        All <strong>{{ task_counts.all }}</strong>
+                    </a>
+                    <a class="filter-chip {% if status_filter == 'pending' %}active{% endif %}" href="{% url 'hello-world' %}?status=pending">
+                        Pending <strong>{{ task_counts.pending }}</strong>
+                    </a>
+                    <a class="filter-chip {% if status_filter == 'completed' %}active{% endif %}" href="{% url 'hello-world' %}?status=completed">
+                        Completed <strong>{{ task_counts.completed }}</strong>
+                    </a>
+                </div>
+            </div>
+
+            {% if tasks %}
+                <div class="task-list">
+                    {% for task in tasks %}
+                        <article class="task-item">
+                            <div class="split">
+                                <div class="stack">
+                                    <h3>{{ task.title }}</h3>
+                                    <div class="task-meta">
+                                        <span class="status-badge {% if task.is_completed %}completed{% else %}pending{% endif %}">
+                                            {% if task.is_completed %}Completed{% else %}Pending{% endif %}
+                                        </span>
+                                        <span class="muted fine">Updated {{ task.updated_at|date:"M d, Y H:i" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if task.description %}
+                                <p>{{ task.description }}</p>
+                            {% else %}
+                                <p class="fine">No description provided.</p>
+                            {% endif %}
+                            <div class="button-row">
+                                <form method="post" action="{% url 'task-toggle' task.pk %}">
+                                    {% csrf_token %}
+                                    <button class="secondary" type="submit">
+                                        {% if task.is_completed %}Mark as pending{% else %}Mark as completed{% endif %}
+                                    </button>
+                                </form>
+                                <a class="button-link secondary" href="{% url 'task-update' task.pk %}">Edit</a>
+                                <a class="button-link danger" href="{% url 'task-delete' task.pk %}">Delete</a>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="task-item">
+                    <h3>No tasks in this view.</h3>
+                    <p>
+                        {% if status_filter == "completed" %}
+                            You have not completed any task yet.
+                        {% elif status_filter == "pending" %}
+                            You do not have pending tasks right now.
+                        {% else %}
+                            You do not have tasks yet.
+                        {% endif %}
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

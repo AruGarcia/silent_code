@@ -1,17 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign up</title>
-</head>
-<body>
-    <h1>Create account</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Sign up</button>
-    </form>
-    <p><a href="{% url 'accounts:login' %}">Already have an account?</a></p>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Create Account | Silent Code{% endblock %}
+
+{% block content %}
+    <section class="grid auth-grid">
+        <div class="surface hero stack" style="grid-column: span 7;">
+            <span class="eyebrow">New account</span>
+            <h1>Build a calm place to track your work.</h1>
+            <p>
+                Create your account with email-based authentication. After that, every task you
+                add stays attached to your own workspace.
+            </p>
+        </div>
+
+        <div class="surface card stack" style="grid-column: span 5;">
+            <div class="stack">
+                <h2>Create account</h2>
+                <p class="fine">Use a valid email because it is your login identifier.</p>
+            </div>
+            {% if form.errors %}
+                <div class="errors">
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="button-row">
+                    <button type="submit">Sign up</button>
+                    <a class="button-link secondary" href="{% url 'accounts:login' %}">Already have an account?</a>
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock %}

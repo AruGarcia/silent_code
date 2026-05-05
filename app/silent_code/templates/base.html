@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Silent Code{% endblock %}</title>
+    <style>
+        :root {
+            --bg: #f3efe7;
+            --surface: rgba(255, 252, 247, 0.86);
+            --surface-strong: #fffdf8;
+            --text: #1f2522;
+            --muted: #5c6a64;
+            --line: rgba(31, 37, 34, 0.12);
+            --accent: #0d5c4d;
+            --accent-soft: #d9ebe4;
+            --danger: #8f2f2f;
+            --shadow: 0 24px 70px rgba(31, 37, 34, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Georgia, "Times New Roman", serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(13, 92, 77, 0.14), transparent 30%),
+                radial-gradient(circle at right, rgba(196, 167, 104, 0.18), transparent 24%),
+                linear-gradient(180deg, #f7f2e8 0%, #efe9dd 100%);
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .shell {
+            width: min(1120px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 40px 0 56px;
+        }
+
+        .brand {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .brand-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text);
+            font-size: 0.9rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .brand-mark::before {
+            content: "";
+            width: 42px;
+            height: 1px;
+            background: var(--text);
+            opacity: 0.5;
+        }
+
+        .surface {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+        }
+
+        .hero {
+            padding: 32px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 14px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1, h2, h3 {
+            margin: 0;
+            font-weight: 600;
+            line-height: 1.04;
+        }
+
+        h1 {
+            font-size: clamp(2.4rem, 4.5vw, 4.7rem);
+            letter-spacing: -0.04em;
+        }
+
+        h2 {
+            font-size: clamp(1.4rem, 2.4vw, 2rem);
+            letter-spacing: -0.03em;
+        }
+
+        p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .auth-grid,
+        .tasks-grid {
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+        }
+
+        .card {
+            padding: 28px;
+        }
+
+        .stack {
+            display: grid;
+            gap: 16px;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        form {
+            display: grid;
+            gap: 14px;
+        }
+
+        form p {
+            display: grid;
+            gap: 8px;
+            color: var(--text);
+        }
+
+        label {
+            font-size: 0.9rem;
+            letter-spacing: 0.02em;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            border: 1px solid rgba(31, 37, 34, 0.14);
+            border-radius: 16px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text);
+            font: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        button,
+        .button-link {
+            border: 0;
+            border-radius: 999px;
+            padding: 12px 18px;
+            background: var(--accent);
+            color: #f8f6f1;
+            font: inherit;
+            cursor: pointer;
+            transition: transform 120ms ease, opacity 120ms ease;
+        }
+
+        button:hover,
+        .button-link:hover {
+            transform: translateY(-1px);
+            opacity: 0.94;
+            text-decoration: none;
+        }
+
+        .button-link.secondary,
+        button.secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--line);
+        }
+
+        .button-link.danger,
+        button.danger {
+            background: var(--danger);
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.56);
+        }
+
+        .filter-chip.active {
+            background: var(--accent);
+            color: #f7f3eb;
+            border-color: var(--accent);
+        }
+
+        .task-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .task-item {
+            display: grid;
+            gap: 14px;
+            padding: 22px;
+            border-radius: 22px;
+            background: var(--surface-strong);
+            border: 1px solid rgba(31, 37, 34, 0.08);
+        }
+
+        .task-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            padding: 7px 11px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .status-badge.pending {
+            background: #f0e4c7;
+            color: #7b5f1b;
+        }
+
+        .status-badge.completed {
+            background: #d8ebe5;
+            color: #145647;
+        }
+
+        .split {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .hero-copy {
+            max-width: 700px;
+        }
+
+        .fine {
+            font-size: 0.92rem;
+        }
+
+        .errors {
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: rgba(143, 47, 47, 0.08);
+            color: var(--danger);
+        }
+
+        ul.errorlist {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        @media (max-width: 860px) {
+            .shell {
+                width: min(100% - 20px, 1120px);
+                padding-top: 22px;
+            }
+
+            .hero,
+            .card {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <div class="brand">
+            <div class="brand-mark">Silent Code</div>
+            {% block top_actions %}{% endblock %}
+        </div>
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
