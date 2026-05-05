@@ -1,4 +1,35 @@
 import importlib
+from pathlib import Path
+
+import environ
+
+
+def test_base_settings_use_sqlite_when_database_url_is_missing(monkeypatch):
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.setattr(environ.Env, "read_env", lambda *args, **kwargs: None)
+
+    module = importlib.import_module("config.settings.base")
+    base = importlib.reload(module)
+
+    assert base.DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3"
+    assert Path(base.DATABASES["default"]["NAME"]).name == "db.sqlite3"
+
+
+def test_base_settings_use_postgres_when_database_url_is_defined(monkeypatch):
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        "postgresql://postgres:postgres@localhost:5432/silent_code",
+    )
+    monkeypatch.setattr(environ.Env, "read_env", lambda *args, **kwargs: None)
+
+    module = importlib.import_module("config.settings.base")
+    base = importlib.reload(module)
+
+    assert base.DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql"
+    assert base.DATABASES["default"]["NAME"] == "silent_code"
+    assert base.DATABASES["default"]["USER"] == "postgres"
+    assert base.DATABASES["default"]["HOST"] == "localhost"
+    assert base.DATABASES["default"]["PORT"] == 5432
 
 
 def test_development_settings_use_local_defaults(monkeypatch):
